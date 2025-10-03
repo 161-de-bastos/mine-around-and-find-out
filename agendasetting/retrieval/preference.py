@@ -1,6 +1,5 @@
 """
 GDELT
-I don't remember.
 """
 
 COLUMNS = [
@@ -25,3 +24,13 @@ COLLECTIONS = [
     "252C38380603","252C38380605","252C38380607","252C38380609","252C38380611","252C34412158","252C38380582","252C38380613","252C38380615","252C38380621",
     "252C38380623","252C38380619","252C38380617"
 ]
+
+
+ONTOPIC_WORDS = ["antamina", "antapaccay", "atacocha", "cerro corona", "bambas", "pucamarca", "quellaveco",
+                    "toromocho", "yanacocha", "glencore", "nexa", "fields", "mmg", "minsur",
+                    "angloamerican", "volcan", "chinalco", "newmont", 'xstrata','ferrobamba','chungar','animon','minem']
+
+SCRAPING = {
+    "timeout": 25,
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64; rv:143.0) Gecko/20100101 Firefox/143.0"
+}

@@ -6,7 +6,7 @@ import zipfile
 from datetime import date, timedelta
 from tqdm import tqdm
 
-from .preference import COLUMNS
+from ..preference import COLUMNS
 LINK = 'http://data.gdeltproject.org/events/'
 
 class gdelt_archive:
