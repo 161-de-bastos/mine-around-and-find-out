@@ -10,3 +10,10 @@ PREPROCESS_CFG = {
 
 SPACY_ESP_MODEL = 'es_core_news_md'
 TRANSFORMERS_SENTIMENT_MODEL = 'bardsai/finance-sentiment-es-base'
+
+TORCH_CFG = {
+    'force_cpu': False,
+    'dtype': 'auto',
+    'bit8': False,
+    'bit4': False
+}

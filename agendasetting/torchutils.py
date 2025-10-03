@@ -1,7 +1,7 @@
 import torch as tch
 
-def cudamaxxing():
-    return tch.device('cuda:0' if tch.cuda.is_available() else 'cpu')
+def cudamaxxing(force_cpu: bool = False):
+    return tch.device('cuda:0' if tch.cuda.is_available() and not force_cpu else 'cpu')
 
 def dtypemaxxing(dev: tch.device, dtype: str = 'auto'):
     assert dtype in ['auto','fp16','bf16','fp32']
@@ -21,8 +21,8 @@ def quantmaxxing(bit8: bool = False, bit4: bool = False):
     kwargs.update({'load_in_4bit': bit4})
     return kwargs
 
-def torchesque(dtype: str = 'auto', bit8: bool = False, bit4: bool = False):
-    dev = cudamaxxing()
+def torchesque(force_cpu: bool = False, dtype: str = 'auto', bit8: bool = False, bit4: bool = False):
+    dev = cudamaxxing(force_cpu = force_cpu)
     return {
         'device': dev,
         'dtype': dtypemaxxing(dev, dtype = dtype),
