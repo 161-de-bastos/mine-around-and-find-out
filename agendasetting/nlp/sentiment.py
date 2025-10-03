@@ -7,12 +7,12 @@ from ..torchutils import torchesque
 
 def load_emotions(model: str = TRANSFORMERS_SENTIMENT_MODEL, cfg: dict = TORCH_CFG):
     tok = AutoTokenizer.from_pretrained(model, use_fast = True)
-    backend = torchesque(**TORCH_CFG)
+    backend = torchesque(**cfg)
 
     mdl = AutoModelForSequenceClassification.from_pretrained(model, **backend['quantargs'])
     mdl.eval()
 
-    if backend['device'].type == 'cuda' and not (TORCH_CFG['bit8'] or TORCH_CFG['bit4']):
+    if backend['device'].type == 'cuda' and not (cfg['bit8'] or cfg['bit4']):
         mdl.to(backend['device'], dtype = backend['dtype'])
     else:
         mdl.to(backend['device'])
