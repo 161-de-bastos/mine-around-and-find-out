@@ -25,12 +25,17 @@ COLLECTIONS = [
     "252C38380623","252C38380619","252C38380617"
 ]
 
+MEDIACLOUD_START = "2008-01-01"
 
-ONTOPIC_WORDS = ["antamina", "antapaccay", "atacocha", "cerro corona", "bambas", "pucamarca", "quellaveco",
-                    "toromocho", "yanacocha", "glencore", "nexa", "fields", "mmg", "minsur",
-                    "angloamerican", "volcan", "chinalco", "newmont", 'xstrata','ferrobamba','chungar','animon','minem']
+"""
+GENERAL SCRAPING
+"""
 
 SCRAPING = {
     "timeout": 25,
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64; rv:143.0) Gecko/20100101 Firefox/143.0"
 }
+
+ONTOPIC = ["antamina", "antapaccay", "atacocha", "cerro corona", "bambas", "pucamarca", "quellaveco",
+                    "toromocho", "yanacocha", "glencore", "nexa", "fields", "mmg", "minsur",
+                    "angloamerican", "volcan", "chinalco", "newmont", 'xstrata','ferrobamba','chungar','animon','minem']
