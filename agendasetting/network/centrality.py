@@ -19,7 +19,8 @@ def pagerank_power(A, alpha=0.85, tol=1e-6, max_iter=100):
     for _ in range(max_iter):
         v_next = alpha * (P @ v + (dangling @ v) * (1.0 / n)) + teleport
         if np.linalg.norm(v_next - v, 1) < tol:
-            v = v_next; break
+            v = v_next
+            break
         v = v_next
     return v / v.sum()
 
@@ -34,5 +35,3 @@ def eigenvector_centrality(A, k=1, tol=1e-6, max_iter=200):
     V = np.abs(vecs)
     return V / (np.sum(V, axis=0, keepdims=True) + 1e-12)
 
-def degree_centrality(A):
-    return np.array(A.sum(axis=1)).ravel()

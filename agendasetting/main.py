@@ -52,7 +52,7 @@ def run_topic_correlation(txts, vct, mdl, graph_cfg, centrality_cfg):
     from .network.graph import topic_graph
     from .network.centrality import pagerank_power
 
-    nodes, sparse = topic_graph(
+    sparse, nodes = topic_graph(
         txts = txts,
         vectorizer = vct,
         model = mdl,
@@ -64,7 +64,7 @@ def run_topic_correlation(txts, vct, mdl, graph_cfg, centrality_cfg):
         **centrality_cfg
     )
 
-    return nodes, sparse, pr
+    return sparse, nodes, pr
 
 if __name__=='__main__':
     SKIP_SEQUENCE = [ 
@@ -75,29 +75,39 @@ if __name__=='__main__':
     
     if not SKIP_SEQUENCE[0] or True:
         nlp, mdl = load_models()
+        docs = get_bodies(WORKABLE_CSV_PATH)
         txts = preprocess(
-            txts = get_bodies(WORKABLE_CSV_PATH),
+            txts = docs,
             nlp = nlp,
             cfg = PREPROCESS_CFG
         )
 
     if not SKIP_SEQUENCE[1]:
+        from .figures import plot_class_distribution
+
         sentiments = run_sentiments(
-            txts = txts, 
+            txts = docs, 
             mdl = mdl
         )
+        plot_class_distribution(sentiments['avg'])
     
     if not SKIP_SEQUENCE[2]:
         topic, vct, top = run_lda(
-            txts = txts, 
+            txts = docs, 
             cfg = LDA_CFG
         )
 
     if not SKIP_SEQUENCE[3] and not SKIP_SEQUENCE[2]:
-        ns, spr, pr = run_topic_correlation(
+        from .metrics import graph_stats, degree_centrality
+        from .figures import plot_degree_hist
+
+        spr, ns, pr = run_topic_correlation(
             txts = txts,
             vct = vct,
             mdl = topic,
             graph_cfg = TOPIC_CFG,
             centrality_cfg = PAGERANK_CFG
         )
+
+        print(graph_stats(spr))
+        plot_degree_hist(degree_centrality(spr))
