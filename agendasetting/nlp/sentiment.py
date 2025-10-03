@@ -24,4 +24,52 @@ def load_emotions(model: str = TRANSFORMERS_SENTIMENT_MODEL, cfg: dict = TORCH_C
         'id2label': mdl.config.id2label
     }
 
+def standard_labels(rawscores):
+    out = {}
+    for s in rawscores:
+        lbl = s['label'].lower()
+        if      'neg' in lbl:   key = 'negative'
+        elif    'neu' in lbl:   key = 'neutral'
+        elif    'pos' in lbl:   key = 'positive'
+        else:                   key = lbl
+        out[key] = float(s['score'])
+    return out
 
+def softmax(logits):
+    z = logits - logits.max(axis = 1, keepdims = True)
+    e = np.exp(z)
+    return e / e.sum(axis = 1, keepdims = True)
+
+def predict_sentiment(txts, loader, batch_size = 64, max_length = 256, truncation = True):
+    tok = loader['tokenizer']
+    model = loader['model']
+    dev = loader['device']
+    id2label = loader['id2label']
+    preds = [None] * len(txts)
+
+    with tch.inference_mode():
+        tch.autocast
+        for i in range(0, len(txts), batch_size):
+            batch = txts[i:i + batch_size]
+            enc = tok(batch, padding = True, truncation = truncation, max_length = max_length, return_tensors = "pt").to(dev)
+            logits = model(**enc).logits
+            probs = softmax(logits.detach().float().cpu().numpy())
+            for j in range(probs.shape[0]):
+                row = probs[j]
+                raw = [
+                    {"label": id2label[k], "score": float(row[k])} for k in range(row.shape[0])
+                ]
+                preds[i + j] = standard_labels(raw)
+
+    avg = {}
+    for r in preds:
+        for k, v in r.items():
+            avg[k] = avg.get(k, 0.0) + v
+    if preds:
+        for k in list(avg.keys()):
+            avg[k] /= len(preds)
+
+    return {
+        "preds": preds, 
+        "avg": avg
+    }
