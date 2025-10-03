@@ -7,16 +7,18 @@ import time
 dotenv.load_dotenv()
 
 class mediacloud:
-    def __init__(self, exportdir, collection, start_date, end_date = dt.date.today()):
+    def __init__(self, version, exportdir, collection, start_date, end_date = dt.date.today()):
         self.__api = SearchApi(os.getenv('API_KEY'))
+        self.version = version
         self.exportdir = exportdir
         self.collection = collection
         self.start_date = dt.date.fromisoformat(start_date)
         self.end_date = dt.date.fromisoformat(end_date) if type(end_date) == str else end_date
+        os.makedirs(self.exportdir, exist_ok=True)
     
     def hit_export(self, jsons):
         df = pd.DataFrame(jsons)[['media_name', 'publish_date','title','url']]
-        realpath = os.path.join(self.exportdir, 'retrieved.csv')
+        realpath = os.path.join(self.exportdir, f'retrieved_v{self.version}.1.csv')
         df.to_csv(
             realpath, 
             index = False,

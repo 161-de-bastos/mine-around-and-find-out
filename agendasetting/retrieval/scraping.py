@@ -92,4 +92,3 @@ def cumulative_export(input_csv, output_csv, batch_size = 25, timeout = 25, user
             flush_buffer()
 
     flush_buffer()
-    print(f'Done.')
