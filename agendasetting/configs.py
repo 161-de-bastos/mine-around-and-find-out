@@ -9,3 +9,4 @@ PREPROCESS_CFG = {
 }
 
 SPACY_ESP_MODEL = 'es_core_news_md'
+TRANSFORMERS_SENTIMENT_MODEL = 'bardsai/finance-sentiment-es-base'
