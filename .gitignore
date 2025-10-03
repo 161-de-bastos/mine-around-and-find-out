@@ -2,7 +2,9 @@
 reports/*/
 *.xlsx
 *.csv
-*.ipynb
+.vscode/
+.deprecated/
+data/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
