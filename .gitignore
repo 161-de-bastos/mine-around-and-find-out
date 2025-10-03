@@ -2,7 +2,6 @@
 reports/*/
 *.xlsx
 *.csv
-*.ipynb
 .vscode/
 .deprecated/
 data/

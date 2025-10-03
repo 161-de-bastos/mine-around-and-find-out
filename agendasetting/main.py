@@ -9,12 +9,6 @@ from .configs import (
     PAGERANK_CFG     
 )
 
-SKIP_SEQUENCE = [ 
-    False, 
-    False,
-    False
-]
-
 def get_bodies(path):
     import pandas as pd
 
@@ -71,6 +65,12 @@ def run_topic_correlation(txts, vct, mdl, graph_cfg, centrality_cfg):
     return nodes, sparse, pr
 
 if __name__=='__main__':
+    SKIP_SEQUENCE = [ 
+        False, 
+        False,
+        False
+    ]
+    
     if not SKIP_SEQUENCE[0] or True:
         nlp, mdl = load_models()
         txts = preprocess(
