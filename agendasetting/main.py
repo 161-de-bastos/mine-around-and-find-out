@@ -6,6 +6,7 @@ from .configs import (
     WORKABLE_CSV_PATH,
     SENTIMENT_INFERENCE,
     LDA_CFG,
+    TOPIC_CFG,
     PAGERANK_CFG     
 )
 
@@ -22,23 +23,24 @@ def load_models():
     mdl = load_emotions(model = TRANSFORMERS_SENTIMENT_MODEL, cfg = TORCH_CFG)
     return nlp, mdl
 
-def preprocess(txts, nlp):
+def preprocess(txts, nlp, cfg):
     from .nlp.preprocess import preprocess_docs
 
     return preprocess_docs(
         txts = txts, 
         nlp = nlp, 
-        n_process = PREPROCESS_CFG['n_process'],
-        batch_size = PREPROCESS_CFG['batch_size']
+        cfg = cfg,
+        n_process = cfg['n_process'],
+        batch_size = cfg['batch_size']
     )
 
-def run_sentiments(txts, mdl):
+def run_sentiments(txts, mdl, cfg):
     from .nlp.sentiment import predict_sentiment
 
     return predict_sentiment(
         txts = txts,
         mdl = mdl,
-        **SENTIMENT_INFERENCE
+        **cfg
     )
 
 def run_lda(txts, cfg):
@@ -75,7 +77,8 @@ if __name__=='__main__':
         nlp, mdl = load_models()
         txts = preprocess(
             txts = get_bodies(WORKABLE_CSV_PATH),
-            nlp = nlp
+            nlp = nlp,
+            cfg = PREPROCESS_CFG
         )
 
     if not SKIP_SEQUENCE[1]:
@@ -95,6 +98,6 @@ if __name__=='__main__':
             txts = txts,
             vct = vct,
             mdl = topic,
-            graph_cfg = LDA_CFG,
+            graph_cfg = TOPIC_CFG,
             centrality_cfg = PAGERANK_CFG
         )

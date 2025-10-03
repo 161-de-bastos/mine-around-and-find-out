@@ -33,6 +33,11 @@ LDA_CFG = {
     'random_state': 42
 }
 
+TOPIC_CFG = {
+    'tau': 0.0,
+    'normalize_rows': True
+}
+
 PAGERANK_CFG = {
     'alpha': 0.85, 
     'tol': 1e-6, 
