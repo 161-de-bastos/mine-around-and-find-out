@@ -1,10 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.metrics import (
-    confusion_matrix, classification_report,
-    accuracy_score, f1_score, precision_score, recall_score
-)
+from sklearn.metrics import confusion_matrix, classification_report, accuracy_score, f1_score, precision_score, recall_score
 from gensim.models.coherencemodel import CoherenceModel
 
 def plot_class_distribution(scores_avg, title="Distribución de sentimiento (promedio corpus)"):

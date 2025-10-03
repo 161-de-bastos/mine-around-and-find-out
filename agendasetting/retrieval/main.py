@@ -1,6 +1,9 @@
 EXPORTDIR = 'data'
 VERSION = 1
-SKIP_SEQUENCE = [False, False]
+SKIP_SEQUENCE = [
+    False, 
+    False
+]
 
 def retrieve_urls():
     from agendasetting.retrieval.mediacloud import mediacloud, build_query

@@ -40,11 +40,11 @@ def softmax(logits):
     e = np.exp(z)
     return e / e.sum(axis = 1, keepdims = True)
 
-def predict_sentiment(txts, loader, batch_size = 64, max_length = 256, truncation = True):
-    tok = loader['tokenizer']
-    model = loader['model']
-    dev = loader['device']
-    id2label = loader['id2label']
+def predict_sentiment(txts, mdl, batch_size = 64, max_length = 256, truncation = True):
+    tok = mdl['tokenizer']
+    model = mdl['model']
+    dev = mdl['device']
+    id2label = mdl['id2label']
     preds = [None] * len(txts)
 
     with tch.inference_mode():
