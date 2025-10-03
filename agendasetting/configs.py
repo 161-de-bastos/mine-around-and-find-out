@@ -9,7 +9,7 @@ PREPROCESS_CFG = {
     'batch_size':512                  
 }
 
-SPACY_ESP_MODEL = 'es_core_news_md'
+SPACY_ESP_MODEL = 'es_dep_news_trf'
 TRANSFORMERS_SENTIMENT_MODEL = 'bardsai/finance-sentiment-es-base'
 
 TORCH_CFG = {
