@@ -97,21 +97,19 @@ class exporter:
 
     def __init_df(self, total_workers, wid):
         self.df_in = pd.read_csv(self.input_csv)
+
+        if self.distributed:
+            assert total_workers > wid
+            self.output_csv = self.__worker_csv(wid)
+            distrib = np.linspace(0,self.df_in.shape[0], total_workers + 1 , dtype = int)
+            self.df_in = self.df_in.iloc[distrib[wid]:distrib[wid + 1]]
+
         self.processed = set()
         if self.resume and os.path.exists(self.output_csv) and os.path.getsize(self.output_csv) > 0:
             try:
                 self.processed = set(pd.read_csv(self.output_csv, usecols=["url"])["url"].astype(str))
             except Exception:
                 pass
-
-        if self.distributed:
-            assert total_workers > wid
-            self.output_csv = self.__worker_csv(wid)
-            self.df_in = self.df_in[~self.df_in['url'].isin(self.processed)]
-
-            distrib = np.linspace(0,self.df_in.shape[0], total_workers + 1 , dtype = int)
-            self.df_in = self.df_in.iloc[distrib[wid]:distrib[wid + 1]]
-            self.processed = set()
 
     def __flush_buffer(self):
         if not self.__buffer:
