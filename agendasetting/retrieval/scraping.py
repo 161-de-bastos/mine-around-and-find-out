@@ -3,56 +3,72 @@ from tqdm import tqdm
 from newspaper import Article
 import os
 import nltk
+import re
 import requests as rq
-from bs4 import BeautifulSoup as bs
 import random
 import time
 import numpy as np
 import glob
+from waybackpy import WaybackMachineCDXServerAPI
 nltk.download('punkt')
 
-def known_bad_sites(url, timeout, user_agent):
-    headers = {'user-agent': user_agent or 'Mozilla/5.0'}
-    resp = rq.get(url, headers=headers, timeout=timeout)
-    soup = bs(resp.content.decode('utf-8'),'html.parser')
+class scraper:
+    def __init__(self, url, timeout, user_agent = None):
+        self.timeout = timeout
+        self.headers = {'user-agent': user_agent or 'Mozilla/5.0'}
+        self.html, self.flag = self.autohandler(url)
 
-    if 'gob' in url:
-        body = soup.find('div',{'class':'description feed-content'}).get_text()
-        keywords = None
-    elif 'larepublica' in url:
-        body = ' '.join(x.get_text() for x in soup.find_all('p')[:-3])
-        keywords = soup.find('meta',{'name':'keywords'}).get('content')
-    elif 'elpopular' in url:
-        body = ' '.join([x.get_text() for x in list(soup.find('div',{'class':'MainContent_main__body__LUkri'}).children) if x.name not in ['div','aside','style','script']])
-        keywords = soup.find('meta',{'name':'keywords'}).get('content')
-    else:
-        raise NotImplemented(':/')
-
-    return body, keywords, None
-
-def extract_info_from_url(url, timeout = 25, user_agent = None):
-    try:
-        article = Article(url, language='es', request_timeout = timeout, browser_user_agent = user_agent) 
-        article.download()
-        article.parse()
-        return article.text, article.meta_keywords, None  # No hay error
-    except:
-          try:
-              return known_bad_sites(url, timeout=timeout, user_agent=user_agent)  # Intenta extraer información de sitios conocidos
-
-          except Exception as e:
-              return None, None, str(e)  # Si hay error, retorna el mensaje de error
-    finally:
+    def vibe_check(self, url):
         time.sleep(random.uniform(0.3,1.7))
 
-def merge_workers(dirwids, output_path):
-    csvs = glob.glob('*.csv',root_dir=dirwids)
-    dfs = pd.concat(
-        [pd.read_csv(os.path.join(dirwids,f)) for f in csvs],
-        ignore_index=True
-    )
-    dfs = dfs.drop_duplicates(subset=['url'], keep='last')
-    dfs.to_csv(output_path, index=False)
+        GET = rq.get(url, headers = self.headers, timeout = self.timeout)
+        HEADERS = GET.headers['Content-Type']
+        MIMETYPE = HEADERS.split(';')[0]
+        CHARSET = HEADERS.split('charset=')[-1]
+        STATUS = GET.status_code
+
+        if STATUS == 200 and 'text/html' in MIMETYPE:
+            return GET.content.decode(CHARSET), True
+        else:
+            return None, False
+        
+    def autohandler(self, url):
+        html, flag = self.vibe_check(url)
+
+        if flag:
+            return html, flag
+
+        cdx = iter(
+            WaybackMachineCDXServerAPI(
+                url,
+                user_agent = self.headers['user-agent']
+            ).snapshots()
+        )
+
+        while True:
+            try:
+                snapshot = next(cdx)
+            except StopIteration:
+                break
+            except Exception as e:
+                continue
+
+            try:
+                html, flag = self.vibe_check(snapshot.archive_url)
+                if flag:
+                    return html, flag
+            except:
+                continue
+        return None, False
+        
+    def extract_info(self):
+        if not self.flag:
+            return None, None, 'Unhandleable.'
+        else:
+            article = Article('',language='es')
+            article.download(input_html = self.html)
+            article.parse()
+            return re.sub(r'\n\n',' ',article.text_cleaned), article.meta_keywords, None
 
 class exporter:
     def __init__(
@@ -113,11 +129,11 @@ class exporter:
             if self.resume and url in self.processed:
                 continue
 
-            body, kws, err = extract_info_from_url(
+            body, kws, err = scraper(
                 url,
                 timeout=self.timeout,
                 user_agent=self.user_agent
-            )
+            ).extract_info()
 
             self.__buffer.append({
                 "media_name": row["media_name"],
@@ -133,3 +149,12 @@ class exporter:
                 self.__flush_buffer()
 
         self.__flush_buffer()
+
+def merge_workers(dirwids, output_path):
+    csvs = glob.glob('*.csv',root_dir=dirwids)
+    dfs = pd.concat(
+        [pd.read_csv(os.path.join(dirwids,f)) for f in csvs],
+        ignore_index=True
+    )
+    dfs = dfs.drop_duplicates(subset=['url'], keep='last')
+    dfs.to_csv(output_path, index=False)

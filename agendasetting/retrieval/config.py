@@ -36,6 +36,9 @@ SCRAPING = {
     "user_agent": "Mozilla/5.0 (X11; Linux x86_64; rv:143.0) Gecko/20100101 Firefox/143.0"
 }
 
-ONTOPIC = ["antamina", "antapaccay", "atacocha", "cerro corona", "bambas", "pucamarca", "quellaveco",
-                    "toromocho", "yanacocha", "glencore", "nexa", "fields", "mmg", "minsur",
-                    "angloamerican", "volcan", "chinalco", "newmont", 'xstrata','ferrobamba','chungar','animon','minem']
+ONTOPIC = [
+    "compañía minera", "antamina", "glencore", "antapaccay", "nexa resources", "atacocha", "gold fields la cima",
+    "cerro corona", "mineral and metals group", "mmg", "bambas", "xstrata", "minsur", "pucamarca", 
+    "anglo american quellaveco", "quellaveco", "volcan compañía minera", "chungar", "animon", "minera chinalco",
+    "chinalco","newmont", "yanacocha", "ferrobamba", "huincush", "chicrin", "minera"
+]
