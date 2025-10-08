@@ -19,19 +19,22 @@ class scraper:
         self.html, self.flag = self.autohandler(url)
 
     def vibe_check(self, url):
-        time.sleep(random.uniform(0.3,1.7))
+        try:
+            time.sleep(random.uniform(0.3,1.7))
 
-        GET = rq.get(url, headers = self.headers, timeout = self.timeout)
-        HEADERS = GET.headers['Content-Type']
-        MIMETYPE = HEADERS.split(';')[0]
-        CHARSET = HEADERS.split('charset=')[-1]
-        STATUS = GET.status_code
+            GET = rq.get(url, headers = self.headers, timeout = self.timeout)
+            HEADERS = GET.headers['Content-Type']
+            MIMETYPE = HEADERS.split(';')[0]
+            CHARSET = HEADERS.split('charset=')[-1]
+            STATUS = GET.status_code
 
-        if STATUS == 200 and 'text/html' in MIMETYPE:
-            return GET.content.decode(CHARSET), True
-        else:
+            if STATUS == 200 and 'text/html' in MIMETYPE:
+                return GET.content.decode(CHARSET), True
+            else:
+                return None, False
+        except:
             return None, False
-        
+            
     def autohandler(self, url):
         html, flag = self.vibe_check(url)
 
